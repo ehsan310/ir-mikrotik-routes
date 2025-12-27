@@ -26,9 +26,9 @@ jobs:
           
           # Cleanup logic for each file
           echo "/ip firewall address-list remove [find list=\"IRAN_IPS\"]" >> iran_list.rsc
-          echo ":delay 1s" >> iran_list.rsc
-          echo "/ip route remove [find comment=\"IR_BGP_DATA\"]" >> iran_routes.rsc
-          echo ":delay 1s" >> iran_routes.rsc
+          echo ":delay 5s" >> iran_list.rsc
+          echo "/ip route remove [find comment=\"IR_BGP_DATA\" routing-table=\$irtable]" >> iran_routes.rsc          
+          echo ":delay 5s" >> iran_routes.rsc
           
           # Fetch IP data
           if ! ip_data=$(curl -fsSL https://raw.githubusercontent.com/ipverse/rir-ip/master/country/ir/ipv4-aggregated.txt); then
@@ -60,7 +60,7 @@ jobs:
           set -euo pipefail
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add iran.rsc
+          git add iran_list.rsc iran_routes.rsc     
           
           # If there are no staged changes, skip commit and push
           if git diff --cached --quiet; then
