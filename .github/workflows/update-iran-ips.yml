@@ -36,6 +36,12 @@ jobs:
             exit 1
           fi
           
+          # Ensure fetched data is not empty to avoid wiping existing entries with no replacements
+          if [ -z "$ip_data" ]; then
+            echo "Error: Fetched IP data is empty; aborting update to avoid clearing existing entries."
+            exit 1
+          fi
+          
           # Process the data
           echo "$ip_data" | grep -v '^#' | while read -r line; do
             if [[ "$line" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/(3[0-2]|[12][0-9]|[0-9])$ ]]; then
