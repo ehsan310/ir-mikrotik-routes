@@ -34,7 +34,7 @@ jobs:
 
       - name: Commit and Push
         run: |
-          set -e
+          set -euo pipefail
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add iran.rsc
