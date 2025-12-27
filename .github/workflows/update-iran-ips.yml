@@ -4,6 +4,9 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: generate-mikrotik-iran-ip-list
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
