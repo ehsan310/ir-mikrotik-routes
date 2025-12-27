@@ -1,0 +1,40 @@
+name: Generate MikroTik Iran IP List
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Generate RSC File
+        run: |
+          echo "# Generated on $(date)" > iran.rsc
+          echo ":log info \"Starting Iran IP list update...\"" >> iran.rsc
+          
+          # Clean up existing data based on the comment
+          echo "/ip firewall address-list remove [find list=\"IRAN_IPS\"]" >> iran.rsc
+          echo "/ip route remove [find comment=\"IR_BGP_DATA\"]" >> iran.rsc
+          echo ":delay 1s" >> iran.rsc
+          
+          # Fetch and format. Use \$irtable and \$irgw as variables.
+          curl -s https://raw.githubusercontent.com/ipverse/rir-ip/master/country/ir/ipv4-aggregated.txt | \
+          grep -v '^#' | while read -r line; do
+            if [[ "$line" =~ ^[0-9] ]]; then
+              echo "/ip firewall address-list add list=IRAN_IPS address=$line" >> iran.rsc
+              echo "/ip route add dst-address=$line gateway=\$irgw routing-table=\$irtable comment=\"IR_BGP_DATA\"" >> iran.rsc
+            fi
+          done
+          echo ":log info \"Import of IP list finished using table \$irtable.\"" >> iran.rsc
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add iran.rsc
+          git commit -m "Update Iran IP List" || exit 0
+          git push
