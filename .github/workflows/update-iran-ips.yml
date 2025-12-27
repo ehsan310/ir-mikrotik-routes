@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-- name: Generate RSC Files
+      - name: Generate RSC Files
         run: |
           set -euo pipefail
           
