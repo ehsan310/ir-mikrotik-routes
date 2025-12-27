@@ -33,8 +33,21 @@ jobs:
 
       - name: Commit and Push
         run: |
+          set -e
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add iran.rsc
-          git commit -m "Update Iran IP List" || exit 0
-          git push
+          
+          # If there are no staged changes, skip commit and push
+          if git diff --cached --quiet; then
+            echo "No changes to commit; skipping push."
+            exit 0
+          fi
+          
+          git commit -m "Update Iran IP List"
+          
+          # Fail explicitly (with message) if push does not succeed
+          if ! git push; then
+            echo "Error: git push failed. Changes were not published."
+            exit 1
+          fi
