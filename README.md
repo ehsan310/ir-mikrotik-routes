@@ -4,10 +4,15 @@ This repository contains MikroTik RouterOS scripts for managing Iranian IP addre
 
 ## Overview
 
-This project provides ready-to-use MikroTik RouterOS scripts (`.rsc` files) that contain all Iranian IP address ranges. These scripts can be used for various purposes including:
+This project provides ready-to-use MikroTik RouterOS scripts (`.rsc` files) that contain all Iranian IP address ranges. The scripts are split into two files for flexibility:
 
-- **Routing**: Direct traffic from/to Iranian IP addresses through specific gateways
-- **Firewall Rules**: Create firewall rules based on Iranian IP ranges
+- **`iran_list.rsc`**: Manages firewall address lists for Iranian IPs
+- **`iran_routes.rsc`**: Manages routing entries for Iranian IPs
+
+These scripts can be used for various purposes including:
+
+- **Routing**: Direct traffic from/to Iranian IP addresses through specific gateways (requires both scripts)
+- **Firewall Rules**: Create firewall rules based on Iranian IP ranges (requires only iran_list.rsc)
 - **Address Lists**: Maintain updated address lists for Iranian IP addresses
 - **Traffic Management**: Apply QoS policies or traffic shaping for Iranian destinations
 
@@ -23,9 +28,27 @@ The scripts in this repository are automatically synchronized daily to ensure yo
 
 ## Usage
 
-### Setup Environment Variables
+This repository provides two separate script files:
+- **`iran_list.rsc`**: Updates the firewall address list with Iranian IP addresses
+- **`iran_routes.rsc`**: Updates routing entries for Iranian IP addresses
 
-Before importing the script, you need to define two environment variables on your MikroTik router:
+### Basic Usage (Address List Only)
+
+If you only need the address list for firewall rules, you can use just the `iran_list.rsc` file:
+
+```routeros
+# Download and import the address list
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
+/import iran_list.rsc
+```
+
+### Advanced Usage (Routes)
+
+If you want to route Iranian traffic through a specific gateway, you need to set up environment variables and use both scripts:
+
+#### 1. Setup Environment Variables
+
+Before importing the routes script, define the required environment variables:
 
 ```routeros
 # Define your Gateway
@@ -37,84 +60,128 @@ Before importing the script, you need to define two environment variables on you
 
 Replace `192.168.88.2` with your desired gateway IP and `main` with your routing table name.
 
-### Importing the Script
+#### 2. Import Both Scripts
 
-To use these scripts on your MikroTik router:
+You can fetch and import the scripts directly from GitHub:
 
-1. **Download the Script**: Download the `iran.rsc` script file from this repository
-2. **Upload to MikroTik**: Upload the script file to your MikroTik router via FTP, Winbox, or WebFig
-3. **Import the Script**: Run the script using one of the following methods:
+```routeros
+# Update the Address List
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
+/import iran_list.rsc
 
-   **Via Terminal:**
-   ```
-   /import file-name=iran.rsc
-   ```
+# Update Routes
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
+/import iran_routes.rsc
+```
 
-   **Via Winbox:**
-   - Go to Files menu and upload the `.rsc` file
-   - Open New Terminal
-   - Type: `/import iran.rsc`
+**Note:** To update existing routing table or gateway, modify the environment variables before importing the routes:
+
+```routeros
+# Change routing table or gateway if needed
+/system script environment set [find name=irtable] value="main"
+/system script environment set [find name=irgw] value="10.0.0.1"
+
+# Then import the routes
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
+/import iran_routes.rsc
+```
 
 ### Keeping Scripts Updated
 
-Since IP address allocations change over time, it's recommended to:
+Since IP address allocations change over time, it's recommended to periodically re-fetch and import the scripts. You can automate this process using MikroTik's scheduler:
 
-- **Regularly Update**: Check this repository for updates (scripts are updated daily)
-- **Automate Updates**: Set up an automated process to fetch and apply updates periodically
+```routeros
+# Create a scheduler to update the scripts daily
+/system scheduler add name="update-iran-ips" interval=1d on-event="/tool fetch url=\"https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc\" dst-path=iran_list.rsc\r\n/import iran_list.rsc\r\n/tool fetch url=\"https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc\" dst-path=iran_routes.rsc\r\n/import iran_routes.rsc"
+```
+
+Or check this repository for updates manually:
+- **Regularly Update**: Scripts are updated daily
 - **Monitor Changes**: Review the commit history to see what IP ranges have been added or removed
 
 ## Script Structure
 
-The MikroTik script contains commands to:
+The repository contains two separate MikroTik scripts:
 
-- Clean up existing Iranian IP data (removes previous entries)
-- Add IP address ranges to the `IRAN_IPS` address list
-- Create route entries for each IP range using your defined gateway and routing table
+### 1. iran_list.rsc - Address List
 
-Example structure:
+This script manages the firewall address list:
+
 ```routeros
-# Clean up existing data
+# Clean up existing address list
 /ip firewall address-list remove [find list="IRAN_IPS"]
-/ip route remove [find comment="IR_BGP_DATA"]
+:delay 5s
 
-# Add IP ranges to address list and create routes
+# Add IP ranges to address list
 /ip firewall address-list add list=IRAN_IPS address=5.22.0.0/16
-/ip route add dst-address=5.22.0.0/16 gateway=$irgw routing-table=$irtable comment="IR_BGP_DATA"
+/ip firewall address-list add list=IRAN_IPS address=5.52.0.0/16
 # ... more IP ranges
 ```
 
-The script uses the environment variables `$irgw` (gateway) and `$irtable` (routing table) that you define before importing.
+### 2. iran_routes.rsc - Routes
+
+This script manages the routing entries using environment variables `$irgw` (gateway) and `$irtable` (routing table):
+
+```routeros
+# Clean up existing routes
+/ip route remove [find comment="IR_BGP_DATA" routing-table=$irtable]
+:delay 5s
+
+# Add routes for IP ranges
+/ip route add dst-address=5.22.0.0/16 gateway=$irgw routing-table=$irtable comment="IR_BGP_DATA"
+/ip route add dst-address=5.52.0.0/16 gateway=$irgw routing-table=$irtable comment="IR_BGP_DATA"
+# ... more routes
+```
+
+Both scripts automatically clean up previous entries before adding new ones to prevent duplicates.
 
 ## Use Cases
 
-### 1. Using with a Specific Gateway
+### 1. Address List Only (For Firewall Rules)
 
-The script automatically routes all Iranian IP traffic through the gateway you specify:
+If you only need to identify Iranian IPs in firewall rules without routing:
 
 ```routeros
-# Set your gateway (do this before importing the script)
-/system script environment add name=irgw user=admin value="192.168.88.2"
+# Import only the address list
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
+/import iran_list.rsc
+
+# Use in firewall rules
+/ip firewall filter
+add chain=forward src-address-list=IRAN_IPS action=accept comment="Allow Iranian IPs"
+add chain=forward dst-address-list=IRAN_IPS action=accept comment="Allow to Iranian IPs"
 ```
 
-After importing, all Iranian IPs will be routed through `192.168.88.2`.
+### 2. Routing Through a Specific Gateway
 
-### 2. Using with Custom Routing Tables
+To route all Iranian IP traffic through a specific gateway:
+
+```routeros
+# Set your gateway and routing table
+/system script environment add name=irgw user=admin value="192.168.88.2"
+/system script environment add name=irtable user=admin value="main"
+
+# Import both scripts
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
+/import iran_list.rsc
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
+/import iran_routes.rsc
+```
+
+### 3. Using with Custom Routing Tables
 
 Route Iranian traffic through a separate routing table:
 
 ```routeros
 # Define a custom routing table for Iranian traffic
 /system script environment add name=irtable user=admin value="irtraffic"
-```
+/system script environment add name=irgw user=admin value="192.168.88.2"
 
-### 3. Firewall Rules with Address List
-
-The script creates the `IRAN_IPS` address list which you can use in firewall rules:
-
-```routeros
-/ip firewall filter
-add chain=forward src-address-list=IRAN_IPS action=accept comment="Allow Iranian IPs"
-add chain=forward dst-address-list=IRAN_IPS action=accept comment="Allow to Iranian IPs"
+# Import the scripts
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
+/import iran_list.rsc
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
+/import iran_routes.rsc
 ```
 
 ## Requirements
