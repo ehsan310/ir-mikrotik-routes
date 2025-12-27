@@ -16,39 +16,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Generate RSC File
+- name: Generate RSC Files
         run: |
           set -euo pipefail
-          echo "# Generated on $(date)" > iran.rsc
-          echo ":log info \"Starting Iran IP list update...\"" >> iran.rsc
           
-          # Clean up existing data based on the comment
-          echo "/ip firewall address-list remove [find list=\"IRAN_IPS\"]" >> iran.rsc
-          echo "/ip route remove [find comment=\"IR_BGP_DATA\"]" >> iran.rsc
-          echo ":delay 1s" >> iran.rsc
+          # Initialize files with headers
+          echo "# Generated on $(date)" > iran_list.rsc
+          echo "# Generated on $(date)" > iran_routes.rsc
           
-          # Fetch IP data with error handling
-          echo "Fetching Iran IP list..."
+          # Cleanup logic for each file
+          echo "/ip firewall address-list remove [find list=\"IRAN_IPS\"]" >> iran_list.rsc
+          echo "/ip route remove [find comment=\"IR_BGP_DATA\"]" >> iran_routes.rsc
+          
+          # Fetch IP data
           if ! ip_data=$(curl -fsSL https://raw.githubusercontent.com/ipverse/rir-ip/master/country/ir/ipv4-aggregated.txt); then
-            echo "Error: Failed to fetch IP data from external source"
+            echo "Error: Failed to fetch IP data"
             exit 1
           fi
           
-          # Verify we got some data
-          if [ -z "$ip_data" ]; then
-            echo "Error: Received empty response from external source"
-            exit 1
-          fi
-          
-          # Process and format the data. Use \$irtable and \$irgw as variables.
+          # Process the data
           echo "$ip_data" | grep -v '^#' | while read -r line; do
             if [[ "$line" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/(3[0-2]|[12][0-9]|[0-9])$ ]]; then
-              echo "/ip firewall address-list add list=IRAN_IPS address=$line" >> iran.rsc
-              echo "/ip route add dst-address=$line gateway=\$irgw routing-table=\$irtable comment=\"IR_BGP_DATA\"" >> iran.rsc
+              # Write to the Address List file
+              echo "/ip firewall address-list add list=IRAN_IPS address=$line" >> iran_list.rsc
+              # Write to the Routes file (using variables)
+              echo "/ip route add dst-address=$line gateway=\$irgw routing-table=\$irtable comment=\"IR_BGP_DATA\"" >> iran_routes.rsc
             fi
           done
           
-          echo ":log info \"Import of IP list finished using table \$irtable.\"" >> iran.rsc
+          echo ":log info \"Iran IP Address List generated.\"" >> iran_list.rsc
+          echo ":log info \"Iran Routes generated for table \$irtable via \$irgw.\"" >> iran_routes.rsc
 
       - name: Commit and Push
         run: |
