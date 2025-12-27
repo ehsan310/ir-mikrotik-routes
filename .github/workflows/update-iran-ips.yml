@@ -26,7 +26,9 @@ jobs:
           
           # Cleanup logic for each file
           echo "/ip firewall address-list remove [find list=\"IRAN_IPS\"]" >> iran_list.rsc
+          echo ":delay 1s" >> iran_list.rsc
           echo "/ip route remove [find comment=\"IR_BGP_DATA\"]" >> iran_routes.rsc
+          echo ":delay 1s" >> iran_routes.rsc
           
           # Fetch IP data
           if ! ip_data=$(curl -fsSL https://raw.githubusercontent.com/ipverse/rir-ip/master/country/ir/ipv4-aggregated.txt); then
