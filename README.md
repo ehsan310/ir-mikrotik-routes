@@ -52,10 +52,10 @@ Before importing the routes script, define the required environment variables:
 
 ```routeros
 # Define your Gateway
-/system script environment set irgw user=admin value="192.168.88.2"
+:global irgw "1.1.1.1" 
 
 # Define your Routing Table (e.g., "main" or "irtraffic")
-/system script environment set irtable user=admin value="main"
+:global irtable "irtraffic"
 ```
 
 Replace `192.168.88.2` with your desired gateway IP and `main` with your routing table name.
@@ -78,8 +78,10 @@ You can fetch and import the scripts directly from GitHub:
 
 ```routeros
 # Change routing table or gateway if needed
-/system script environment set [find name=irtable] value="main"
-/system script environment set [find name=irgw] value="10.0.0.1"
+# Define your Gateway
+:global irgw "1.1.1.1" 
+# Define your Routing Table (e.g., "main" or "irtraffic")
+:global irtable "irtraffic"
 
 # Then import the routes
 /tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
@@ -158,8 +160,11 @@ To route all Iranian IP traffic through a specific gateway:
 
 ```routeros
 # Set your gateway and routing table
-/system script environment set irgw user=admin value="192.168.88.2"
-/system script environment set irtable user=admin value="main"
+# Define your Gateway
+:global irgw "1.1.1.1" 
+
+# Define your Routing Table (e.g., "main" or "irtraffic")
+:global irtable "irtraffic"
 
 # Import both scripts
 /tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
@@ -174,8 +179,11 @@ Route Iranian traffic through a separate routing table:
 
 ```routeros
 # Define a custom routing table for Iranian traffic
-/system script environment set irtable user=admin value="irtraffic"
-/system script environment set irgw user=admin value="192.168.88.2"
+# Define your Gateway
+:global irgw "1.1.1.1" 
+
+# Define your Routing Table (e.g., "main" or "irtraffic")
+:global irtable "irtraffic"
 
 # Import the scripts
 /tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
