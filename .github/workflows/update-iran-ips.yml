@@ -4,6 +4,8 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
 concurrency:
   group: generate-mikrotik-iran-ip-list
   cancel-in-progress: true
