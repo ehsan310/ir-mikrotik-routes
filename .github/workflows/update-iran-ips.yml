@@ -13,6 +13,7 @@ jobs:
 
       - name: Generate RSC File
         run: |
+          set -euo pipefail
           echo "# Generated on $(date)" > iran.rsc
           echo ":log info \"Starting Iran IP list update...\"" >> iran.rsc
           
