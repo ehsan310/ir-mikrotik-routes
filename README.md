@@ -52,10 +52,10 @@ Before importing the routes script, define the required environment variables:
 
 ```routeros
 # Define your Gateway
-/system script environment add name=irgw user=admin value="192.168.88.2"
+/system script environment set irgw user=admin value="192.168.88.2"
 
 # Define your Routing Table (e.g., "main" or "irtraffic")
-/system script environment add name=irtable user=admin value="main"
+/system script environment set irtable user=admin value="main"
 ```
 
 Replace `192.168.88.2` with your desired gateway IP and `main` with your routing table name.
@@ -158,8 +158,8 @@ To route all Iranian IP traffic through a specific gateway:
 
 ```routeros
 # Set your gateway and routing table
-/system script environment add name=irgw user=admin value="192.168.88.2"
-/system script environment add name=irtable user=admin value="main"
+/system script environment set irgw user=admin value="192.168.88.2"
+/system script environment set irtable user=admin value="main"
 
 # Import both scripts
 /tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
@@ -174,8 +174,8 @@ Route Iranian traffic through a separate routing table:
 
 ```routeros
 # Define a custom routing table for Iranian traffic
-/system script environment add name=irtable user=admin value="irtraffic"
-/system script environment add name=irgw user=admin value="192.168.88.2"
+/system script environment set irtable user=admin value="irtraffic"
+/system script environment set irgw user=admin value="192.168.88.2"
 
 # Import the scripts
 /tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
