@@ -1,4 +1,4 @@
-# Generated on Thu Jan 22 03:47:09 UTC 2026
+# Generated on Fri Jan 23 03:41:46 UTC 2026
 :global irtable
 :global irgw
 /ip route remove [find comment="IR_BGP_DATA" routing-table="$irtable"]
@@ -1190,6 +1190,7 @@
 /ip route add distance=50 dst-address=185.165.116.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=185.165.204.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=185.166.60.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
+/ip route add distance=50 dst-address=185.166.92.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=185.166.104.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=185.166.112.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=185.167.72.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
