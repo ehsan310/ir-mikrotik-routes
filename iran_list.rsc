@@ -1,4 +1,4 @@
-# Generated on Fri Feb  6 04:14:41 UTC 2026
+# Generated on Sat Feb  7 04:08:08 UTC 2026
 /ip firewall address-list remove [find list="IRAN_IPS"]
 /ip firewall address-list add list=IRAN_IPS address=2.57.3.0/24
 /ip firewall address-list add list=IRAN_IPS address=2.144.0.0/14
@@ -1444,6 +1444,7 @@
 /ip firewall address-list add list=IRAN_IPS address=188.253.32.0/19
 /ip firewall address-list add list=IRAN_IPS address=188.253.64.0/19
 /ip firewall address-list add list=IRAN_IPS address=192.15.0.0/16
+/ip firewall address-list add list=IRAN_IPS address=192.166.36.0/24
 /ip firewall address-list add list=IRAN_IPS address=193.0.156.0/24
 /ip firewall address-list add list=IRAN_IPS address=193.3.31.0/24
 /ip firewall address-list add list=IRAN_IPS address=193.3.182.0/24
