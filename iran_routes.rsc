@@ -1,4 +1,4 @@
-# Generated on Mon Feb  9 04:27:04 UTC 2026
+# Generated on Tue Feb 10 04:30:26 UTC 2026
 :global irtable
 :global irgw
 /ip route remove [find comment="IR_BGP_DATA" routing-table="$irtable"]
@@ -767,6 +767,7 @@
 /ip route add distance=50 dst-address=151.238.0.0/15 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=152.89.12.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=152.89.44.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
+/ip route add distance=50 dst-address=153.51.128.0/19 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=157.119.188.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=158.58.0.0/17 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=158.58.184.0/21 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
@@ -1447,7 +1448,8 @@
 /ip route add distance=50 dst-address=188.253.32.0/19 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=188.253.64.0/19 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=192.15.0.0/16 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
-/ip route add distance=50 dst-address=192.166.36.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
+/ip route add distance=50 dst-address=192.166.36.0/23 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
+/ip route add distance=50 dst-address=192.166.38.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=193.0.156.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=193.3.31.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=193.3.182.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
@@ -1596,6 +1598,7 @@
 /ip route add distance=50 dst-address=194.147.222.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=194.150.68.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=194.150.165.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
+/ip route add distance=50 dst-address=194.156.77.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=194.156.140.0/22 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=194.180.11.0/24 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
 /ip route add distance=50 dst-address=194.180.208.0/23 gateway="$irgw" routing-table="$irtable" comment="IR_BGP_DATA"
