@@ -1,4 +1,4 @@
-# Generated on Wed Jul  8 05:20:13 UTC 2026
+# Generated on Thu Jul  9 06:03:42 UTC 2026
 :global irtable
 :global irgw
 /ip route remove [find comment="IR_BGP_DATA" routing-table="$irtable"]
