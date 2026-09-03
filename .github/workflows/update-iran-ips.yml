@@ -27,7 +27,16 @@ jobs:
           
           # Declare globals at the top so the /import scope can see them
           echo ":global irtable" >> iran_routes.rsc
-          echo ":global irgw" >> iran_routes.rsc          
+          echo ":global irgw" >> iran_routes.rsc
+          echo ":global irprefsrc" >> iran_routes.rsc
+          echo ":global irdistance" >> iran_routes.rsc
+          
+          # Resolve distance: default 50 unless a valid numeric override is passed via $irdistance
+          echo ":local irDistanceVal 50" >> iran_routes.rsc
+          echo ":if ([:typeof \$irdistance] != \"nothing\" && \$irdistance != \"\") do={" >> iran_routes.rsc
+          echo "  :local irDistanceParsed [:tonum \$irdistance]" >> iran_routes.rsc
+          echo "  :if ([:typeof \$irDistanceParsed] = \"num\") do={ :set irDistanceVal \$irDistanceParsed }" >> iran_routes.rsc
+          echo "}" >> iran_routes.rsc
           
           # Cleanup logic
           echo "/ip firewall address-list remove [find list=\"IRAN_IPS\"]" >> iran_list.rsc
@@ -46,14 +55,28 @@ jobs:
             exit 1
           fi
           
-          # Process the data
+          # Process the data into address-list entries, plus two route variants
+          # (with/without pref-src). RouterOS aborts the whole import on a runtime
+          # error, so pref-src must be structurally omitted (not passed empty) when unset.
+          > routes_with_prefsrc.tmp
+          > routes_without_prefsrc.tmp
           echo "$ip_data" | grep -v '^#' | while read -r line; do
             if [[ "$line" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/(3[0-2]|[12][0-9]|[0-9])$ ]]; then
               echo "/ip firewall address-list add list=IRAN_IPS address=$line" >> iran_list.rsc
               # Essential: Quote the variables to ensure ROS v7 treats them as strings
-              echo "/ip route add distance=50 dst-address=$line gateway=\"\$irgw\" routing-table=\"\$irtable\" comment=\"IR_BGP_DATA\"" >> iran_routes.rsc
+              echo "/ip route add distance=\$irDistanceVal dst-address=$line gateway=\"\$irgw\" routing-table=\"\$irtable\" pref-src=\"\$irprefsrc\" comment=\"IR_BGP_DATA\"" >> routes_with_prefsrc.tmp
+              echo "/ip route add distance=\$irDistanceVal dst-address=$line gateway=\"\$irgw\" routing-table=\"\$irtable\" comment=\"IR_BGP_DATA\"" >> routes_without_prefsrc.tmp
             fi
           done
+          
+          # Only include pref-src when the router-side $irprefsrc is actually set;
+          # otherwise the parameter is fully omitted (an empty/undefined pref-src aborts /import).
+          echo ":if ([:typeof \$irprefsrc] != \"nothing\" && \$irprefsrc != \"\") do={" >> iran_routes.rsc
+          cat routes_with_prefsrc.tmp >> iran_routes.rsc
+          echo "} else={" >> iran_routes.rsc
+          cat routes_without_prefsrc.tmp >> iran_routes.rsc
+          echo "}" >> iran_routes.rsc
+          rm -f routes_with_prefsrc.tmp routes_without_prefsrc.tmp
           
           echo ":log info \"Iran IP Address List generated.\"" >> iran_list.rsc
           echo ":log info \"Iran Routes generated for table \$irtable.\"" >> iran_routes.rsc

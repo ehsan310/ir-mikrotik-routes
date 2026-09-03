@@ -56,9 +56,19 @@ Before importing the routes script, define the required environment variables:
 
 # Define your Routing Table (e.g., "main" or "irtraffic")
 :global irtable "irtraffic"
+
+# (Optional) Preferred source address for the routes (RouterOS "pref-src").
+# If omitted, this is left empty and RouterOS selects the source address automatically.
+:global irprefsrc "10.0.0.5"
+
+# (Optional) Administrative distance for the routes. Defaults to 50 if omitted
+# or if the value provided is not a valid number.
+:global irdistance 50
 ```
 
 Replace `192.168.88.2` with your desired gateway IP and `main` with your routing table name.
+
+`irprefsrc` and `irdistance` are optional — skip either declaration if you don't need to override the default behavior.
 
 #### 2. Import Both Scripts
 
@@ -122,16 +132,19 @@ This script manages the firewall address list:
 
 ### 2. iran_routes.rsc - Routes
 
-This script manages the routing entries using environment variables `$irgw` (gateway) and `$irtable` (routing table):
+This script manages the routing entries using environment variables `$irgw` (gateway), `$irtable` (routing table), and two optional variables:
+
+- `$irprefsrc` — preferred source address (`pref-src`) for the routes. If not set, this parameter is left out entirely and RouterOS selects the source address automatically.
+- `$irdistance` — administrative distance for the routes. If not set (or not a valid number), defaults to `50`.
 
 ```routeros
 # Clean up existing routes
 /ip route remove [find comment="IR_BGP_DATA" routing-table=$irtable]
 :delay 5s
 
-# Add routes for IP ranges
-/ip route add dst-address=5.22.0.0/16 gateway=$irgw routing-table=$irtable comment="IR_BGP_DATA"
-/ip route add dst-address=5.52.0.0/16 gateway=$irgw routing-table=$irtable comment="IR_BGP_DATA"
+# Add routes for IP ranges (pref-src is only included when $irprefsrc is set)
+/ip route add dst-address=5.22.0.0/16 gateway=$irgw routing-table=$irtable distance=$irdistance pref-src=$irprefsrc comment="IR_BGP_DATA"
+/ip route add dst-address=5.52.0.0/16 gateway=$irgw routing-table=$irtable distance=$irdistance pref-src=$irprefsrc comment="IR_BGP_DATA"
 # ... more routes
 ```
 
