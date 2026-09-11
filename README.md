@@ -64,11 +64,27 @@ Before importing the routes script, define the required environment variables:
 # (Optional) Administrative distance for the routes. Defaults to 50 if omitted
 # or if the value provided is not a valid number.
 :global irdistance 50
+
+# (Optional) Backup gateway. If set, a second route is added for every IP range
+# through this gateway at a higher (lower-priority) distance than the primary,
+# so RouterOS automatically fails over to it if the primary gateway goes down.
+:global irgw2 "2.2.2.2"
+
+# (Optional) Administrative distance for the backup gateway ($irgw2) routes.
+# Defaults to ($irdistance + 10) if omitted, so it always stays lower-priority
+# than the primary unless you override it explicitly.
+:global irdistance2 60
+
+# (Optional) Gateway health-check method: "ping" (default), "arp", "bfd", or
+# "no" to disable checking entirely. RouterOS pings the gateway periodically
+# and marks its routes unreachable if it stops responding, which is what
+# triggers automatic failover to the next-lowest-distance gateway.
+:global ircheckgateway "ping"
 ```
 
 Replace `192.168.88.2` with your desired gateway IP and `main` with your routing table name.
 
-`irprefsrc` and `irdistance` are optional — skip either declaration if you don't need to override the default behavior.
+`irprefsrc`, `irdistance`, `irgw2`, `irdistance2`, and `ircheckgateway` are optional — skip any declaration you don't need to override the default behavior.
 
 #### 2. Import Both Scripts
 
@@ -132,10 +148,13 @@ This script manages the firewall address list:
 
 ### 2. iran_routes.rsc - Routes
 
-This script manages the routing entries using environment variables `$irgw` (gateway), `$irtable` (routing table), and two optional variables:
+This script manages the routing entries using environment variables `$irgw` (primary gateway), `$irtable` (routing table), and several optional variables:
 
 - `$irprefsrc` — preferred source address (`pref-src`) for the routes. If not set, this parameter is left out entirely and RouterOS selects the source address automatically.
-- `$irdistance` — administrative distance for the routes. If not set (or not a valid number), defaults to `50`.
+- `$irdistance` — administrative distance for the primary gateway's routes. If not set (or not a valid number), defaults to `50`.
+- `$irgw2` — optional backup gateway. If set, a second route is added for every IP range through this gateway.
+- `$irdistance2` — administrative distance for the backup gateway's routes. If not set (or not a valid number), defaults to `$irdistance + 10`.
+- `$ircheckgateway` — gateway health-check method applied to every route: `ping` (default), `arp`, `bfd`, or `no` to disable checking. This is what enables automatic failover to `$irgw2` when `$irgw` stops responding.
 
 ```routeros
 # Clean up existing routes
@@ -143,9 +162,13 @@ This script manages the routing entries using environment variables `$irgw` (gat
 :delay 5s
 
 # Add routes for IP ranges (pref-src is only included when $irprefsrc is set)
-/ip route add dst-address=5.22.0.0/16 gateway=$irgw routing-table=$irtable distance=$irdistance pref-src=$irprefsrc comment="IR_BGP_DATA"
-/ip route add dst-address=5.52.0.0/16 gateway=$irgw routing-table=$irtable distance=$irdistance pref-src=$irprefsrc comment="IR_BGP_DATA"
+/ip route add dst-address=5.22.0.0/16 gateway=$irgw routing-table=$irtable distance=$irdistance pref-src=$irprefsrc check-gateway=$ircheckgateway comment="IR_BGP_DATA"
+/ip route add dst-address=5.52.0.0/16 gateway=$irgw routing-table=$irtable distance=$irdistance pref-src=$irprefsrc check-gateway=$ircheckgateway comment="IR_BGP_DATA"
 # ... more routes
+
+# When $irgw2 is set, a second (higher-distance) route per IP range is added
+# through it, so RouterOS automatically fails over when $irgw stops responding
+# to the check-gateway probes.
 ```
 
 Both scripts automatically clean up previous entries before adding new ones to prevent duplicates.
@@ -204,6 +227,37 @@ Route Iranian traffic through a separate routing table:
 /tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
 /import iran_routes.rsc
 ```
+
+### 4. Multi-Gateway Failover with Health Checks
+
+Route Iranian traffic through a primary gateway, with automatic failover to a backup gateway if the primary stops responding to pings:
+
+```routeros
+# Primary gateway (preferred while reachable)
+:global irgw "1.1.1.1"
+:global irdistance 50
+
+# Backup gateway (takes over automatically if $irgw fails its health check)
+:global irgw2 "2.2.2.2"
+:global irdistance2 60
+
+# Routing table
+:global irtable "irtraffic"
+
+# Import the scripts
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_list.rsc" dst-path=iran_list.rsc
+/import iran_list.rsc
+/tool fetch url="https://raw.githubusercontent.com/ehsan310/ir-mikrotik-routes/main/iran_routes.rsc" dst-path=iran_routes.rsc
+/import iran_routes.rsc
+```
+
+How it works:
+
+- Every route (both gateways) is created with `check-gateway=ping` by default. RouterOS pings each gateway periodically and marks its routes unreachable after repeated failures.
+- Since `$irgw2`'s routes use a higher `distance` than `$irgw`'s, RouterOS always prefers the primary while it's reachable, and automatically activates the backup routes once the primary is marked unreachable — then automatically reverts once the primary recovers.
+- Only 1 backup gateway (`$irgw2`) is supported. `$irgw2`/`$irdistance2` are entirely optional — omit both to keep single-gateway behavior identical to before.
+- Set `:global ircheckgateway "no"` to disable health checking (routes then behave like plain static routes with no reachability monitoring).
+- Setting `$irdistance` and `$irdistance2` to the **same** value turns this into ECMP load-balancing across both gateways instead of primary/backup failover.
 
 ## Requirements
 
