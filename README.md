@@ -28,9 +28,9 @@ The scripts in this repository are automatically synchronized daily to ensure yo
 
 ### Custom IP Ranges
 
-RIR delegation data records the country of the allocation holder, so some ranges used in Iran are listed under other countries by ipverse. For example, `77.104.64.0/18` is listed under AE. These ranges can be added to `custom_ips.txt`.
+RIR delegation data records the country of the allocation holder, so some ranges used in Iran are listed under other countries by ipverse. `custom_ips.txt` contains manual ranges and ranges found by the weekly scan of the countries in `scan_countries.txt` (currently UAE, Oman, Azerbaijan, and Armenia; add or remove country-code lines to change the scan). Every build validates all custom ranges and removes or cuts out ranges no longer used in Iran; removal reasons are included in the bot's commit message. See [AGENTS.md](AGENTS.md) for the validation rules and data sources.
 
-Use one IPv4 network in CIDR notation per line; a bare IP means `/32`. Host bits must be zero, `#` starts a comment, and blank lines are ignored. Duplicate ranges and ranges overlapping the ipverse data are deduplicated and combined automatically. A bad line fails the workflow, so nothing is committed. A notice is logged when a custom range is already covered by ipverse. Pushing a change to `custom_ips.txt` to `main` regenerates the scripts immediately.
+Use one IPv4 CIDR per line with an optional short comment; a bare IP means `/32`, and host bits must be zero. `#` starts a comment and blank lines are ignored. Duplicate ranges and ranges overlapping the ipverse data are deduplicated and combined automatically. A bad line fails the workflow, so nothing is committed. A notice is logged when a custom range is already covered by ipverse. Pushing a change to `custom_ips.txt` to `main` regenerates the scripts immediately.
 
 ## Usage
 
@@ -276,9 +276,12 @@ How it works:
 This repository's workflow runs **daily**, on manual dispatch, and when a change to `custom_ips.txt` is pushed to `main`. Each run:
 
 - Pulls the latest data from ipverse/rir-ip
+- Re-checks `custom_ips.txt` and removes ranges that are no longer used in Iran
 - Merges in the hand-maintained ranges from `custom_ips.txt`
 - Generates updated MikroTik scripts
 - Commits only when the generated IP data changes (not when only the generated timestamp differs)
+
+The separate country-scan workflow runs weekly, checking the countries listed in `scan_countries.txt` and adding qualifying ranges to `custom_ips.txt`.
 
 Check the commit history to see the update frequency and changes.
 

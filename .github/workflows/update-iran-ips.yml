@@ -21,6 +21,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Validate Custom IPs
+        run: |
+          set -euo pipefail
+          # Re-check custom_ips.txt against RIPE data and remove (or cut out) the parts
+          # that are no longer used in Iran (see AGENTS.md). If the source data can't be
+          # downloaded, this only warns and changes nothing, so the build still runs.
+          python3 scripts/ir_ranges.py --data-dir "$RUNNER_TEMP/ir-data" validate --report "$RUNNER_TEMP/validate-report.md"
+
       - name: Generate RSC Files
         run: |
           set -euo pipefail
@@ -194,11 +202,12 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          # Commit only when the generated content actually changed (ipverse data or
-          # custom_ips.txt). The "# Generated on" line changes on every run, so it is
-          # ignored here; otherwise every run would make a timestamp-only commit.
+          # Commit only when custom_ips.txt changed (validation removed something) or the
+          # generated content actually changed. The "# Generated on" line changes on every
+          # run, so it is ignored here; otherwise every run would make a timestamp-only commit.
           strip_timestamp() { grep -v '^# Generated on ' || true; }
           changed=false
+          git diff --quiet -- custom_ips.txt || changed=true
           for f in iran_list.rsc iran_routes.rsc; do
             if ! cmp -s <(git show "HEAD:$f" 2>/dev/null | strip_timestamp) <(strip_timestamp < "$f"); then
               changed=true
@@ -210,9 +219,21 @@ jobs:
             exit 0
           fi
 
-          git add iran_list.rsc iran_routes.rsc
-          git commit -m "chore(data): update Iran IP list"
-          if ! git push; then
-            echo "Error: git push failed."
-            exit 1
+          git add custom_ips.txt iran_list.rsc iran_routes.rsc
+          report="$RUNNER_TEMP/validate-report.md"
+          if [ -s "$report" ]; then
+            git commit -m "chore(data): update Iran IP list" -m "$(cat "$report")"
+          else
+            git commit -m "chore(data): update Iran IP list"
           fi
+
+          # The scan workflow can push at the same time; rebase on main and retry.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing on the latest main."
+            git pull --rebase
+          done
+          echo "Error: git push failed."
+          exit 1

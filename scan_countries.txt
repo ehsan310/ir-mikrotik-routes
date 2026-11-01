@@ -1,0 +1,6 @@
+# Countries whose ipverse lists are scanned weekly for ranges used in Iran (see AGENTS.md).
+# One ISO country code per line; add or remove lines to change the scan.
+ae  # United Arab Emirates
+om  # Oman
+az  # Azerbaijan
+am  # Armenia

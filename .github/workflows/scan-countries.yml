@@ -1,0 +1,64 @@
+name: Scan Countries for Iranian IP Ranges
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scan_countries.txt
+
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: scan-countries-for-iranian-ip-ranges
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Scan Countries
+        run: |
+          set -euo pipefail
+          # Add the ranges from the ipverse lists of the countries in scan_countries.txt
+          # that pass the Iran check: RIPE country IR and announced from Iran (see AGENTS.md).
+          python3 scripts/ir_ranges.py --data-dir "$RUNNER_TEMP/ir-data" scan --report "$RUNNER_TEMP/scan-report.md"
+
+      - name: Commit, Push and Rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- custom_ips.txt; then
+            echo "No new ranges found; nothing to commit."
+            exit 0
+          fi
+
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add custom_ips.txt
+          git commit -m "chore(data): add scanned Iranian IP ranges" -m "$(cat "$RUNNER_TEMP/scan-report.md")"
+
+          # The build workflow can push at the same time; rebase on main and retry.
+          pushed=false
+          for attempt in 1 2 3; do
+            if git push; then
+              pushed=true
+              break
+            fi
+            echo "Push rejected (attempt $attempt); rebasing on the latest main."
+            git pull --rebase
+          done
+          if [ "$pushed" != true ]; then
+            echo "Error: git push failed."
+            exit 1
+          fi
+
+          # Pushes made with GITHUB_TOKEN don't trigger workflows, so start the build
+          # explicitly; it validates the new entries and regenerates the .rsc files.
+          gh workflow run update-iran-ips.yml --repo "$GITHUB_REPOSITORY" --ref main
