@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - custom_ips.txt
 
 permissions:
   contents: write
@@ -76,6 +80,70 @@ jobs:
             echo "Error: Fetched IP data is empty; aborting."
             exit 1
           fi
+
+          # Merge ipverse data with the hand-maintained ranges in custom_ips.txt (ranges
+          # used in Iran that RIR delegation data / ipverse lists under another country,
+          # e.g. 77.104.64.0/18 is listed under AE). Custom entries are validated
+          # strictly: a bad line fails the run, so nothing is committed. The merged set is
+          # deduplicated and overlapping ranges are combined, because RouterOS rejects
+          # duplicate address-list entries ("already have such entry"), which would abort
+          # the whole /import.
+          printf '%s\n' "$ip_data" > ipverse.tmp
+          python3 - ipverse.tmp custom_ips.txt merged.tmp <<'PY'
+          import ipaddress
+          import os
+          import sys
+
+          ipverse_path, custom_path, out_path = sys.argv[1:4]
+
+          ipverse = []
+          with open(ipverse_path) as f:
+              for raw in f:
+                  line = raw.strip()
+                  if not line or line.startswith("#"):
+                      continue
+                  try:
+                      ipverse.append(ipaddress.IPv4Network(line, strict=False))
+                  except ValueError:
+                      print(f"::warning::Skipping invalid ipverse line: {line}")
+
+          # Never let custom entries mask a broken upstream fetch (e.g. an HTML error page):
+          # committing a list with only the custom ranges would drop every IR route on routers.
+          if not ipverse:
+              print("::error::No valid IPv4 ranges found in ipverse data; aborting.")
+              sys.exit(1)
+
+          custom = []
+          errors = 0
+          if os.path.exists(custom_path):
+              with open(custom_path) as f:
+                  for lineno, raw in enumerate(f, 1):
+                      entry = raw.split("#", 1)[0].strip()
+                      if not entry:
+                          continue
+                      try:
+                          # Strict: host bits must be zero; a bare IP becomes /32.
+                          net = ipaddress.IPv4Network(entry)
+                      except ValueError as e:
+                          print(f"::error file={custom_path},line={lineno}::Invalid IPv4 network '{entry}': {e}")
+                          errors += 1
+                          continue
+                      covering = next((n for n in ipverse if net.subnet_of(n)), None)
+                      if covering is not None:
+                          print(f"::notice file={custom_path},line={lineno}::{net} is already covered by ipverse ({covering}); it can be removed from {custom_path}.")
+                      custom.append(net)
+
+          if errors:
+              print(f"Error: {errors} invalid entr{'y' if errors == 1 else 'ies'} in {custom_path}; aborting.")
+              sys.exit(1)
+
+          merged = list(ipaddress.collapse_addresses(ipverse + custom))
+          with open(out_path, "w") as f:
+              f.writelines(f"{n}\n" for n in merged)
+          print(f"ipverse: {len(ipverse)} ranges, custom: {len(custom)} ranges, merged: {len(merged)} ranges")
+          PY
+          ip_data=$(cat merged.tmp)
+          rm -f ipverse.tmp merged.tmp
           
           # Process the data into address-list entries, plus four route variants:
           # gw1/gw2 x with/without pref-src. RouterOS aborts the whole import on a runtime
@@ -125,13 +193,24 @@ jobs:
           set -euo pipefail
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add iran_list.rsc iran_routes.rsc     
-          
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
+
+          # Commit only when the generated content actually changed (ipverse data or
+          # custom_ips.txt). The "# Generated on" line changes on every run, so it is
+          # ignored here; otherwise every run would make a timestamp-only commit.
+          strip_timestamp() { grep -v '^# Generated on ' || true; }
+          changed=false
+          for f in iran_list.rsc iran_routes.rsc; do
+            if ! cmp -s <(git show "HEAD:$f" 2>/dev/null | strip_timestamp) <(strip_timestamp < "$f"); then
+              changed=true
+            fi
+          done
+
+          if [ "$changed" = false ]; then
+            echo "No IP data changes (only the timestamp differs); skipping commit."
             exit 0
           fi
-          
+
+          git add iran_list.rsc iran_routes.rsc
           git commit -m "Update Iran IP List"
           if ! git push; then
             echo "Error: git push failed."

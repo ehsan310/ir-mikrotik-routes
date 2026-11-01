@@ -1,6 +1,6 @@
 # Iranian IP Routes for MikroTik
 
-This repository contains MikroTik RouterOS scripts for managing Iranian IP addresses. The scripts are automatically updated on a daily basis using IP address data from the [ipverse/rir-ip](https://github.com/ipverse/rir-ip/tree/master/country/ir) repository, which serves as the authoritative source of truth for Iranian IP address ranges.
+This repository contains MikroTik RouterOS scripts for managing Iranian IP addresses. The scripts are automatically updated using IP address data from the [ipverse/rir-ip](https://github.com/ipverse/rir-ip/tree/master/country/ir) repository plus the hand-maintained `custom_ips.txt` list.
 
 ## Overview
 
@@ -18,13 +18,19 @@ These scripts can be used for various purposes including:
 
 ## Data Source
 
-The IP address data is sourced from [ipverse/rir-ip](https://github.com/ipverse/rir-ip), a comprehensive repository that aggregates Regional Internet Registry (RIR) data. This ensures that the IP ranges are:
+The IP address data is sourced from [ipverse/rir-ip](https://github.com/ipverse/rir-ip), a comprehensive repository that aggregates Regional Internet Registry (RIR) data, plus the hand-maintained ranges in `custom_ips.txt`. This ensures that the IP ranges are:
 
 - **Accurate**: Based on official RIR allocations
 - **Up-to-date**: Updated regularly to reflect the latest allocations
 - **Reliable**: Sourced from authoritative internet registry data
 
 The scripts in this repository are automatically synchronized daily to ensure you always have the latest Iranian IP address ranges.
+
+### Custom IP Ranges
+
+RIR delegation data records the country of the allocation holder, so some ranges used in Iran are listed under other countries by ipverse. For example, `77.104.64.0/18` is listed under AE. These ranges can be added to `custom_ips.txt`.
+
+Use one IPv4 network in CIDR notation per line; a bare IP means `/32`. Host bits must be zero, `#` starts a comment, and blank lines are ignored. Duplicate ranges and ranges overlapping the ipverse data are deduplicated and combined automatically. A bad line fails the workflow, so nothing is committed. A notice is logged when a custom range is already covered by ipverse. Pushing a change to `custom_ips.txt` to `main` regenerates the scripts immediately.
 
 ## Usage
 
@@ -124,7 +130,7 @@ Since IP address allocations change over time, it's recommended to periodically 
 ```
 
 Or check this repository for updates manually:
-- **Regularly Update**: Scripts are updated daily
+- **Regularly Update**: The workflow runs daily, on manual dispatch, and when `custom_ips.txt` changes on `main`; scripts are regenerated and committed only when the generated IP data changes
 - **Monitor Changes**: Review the commit history to see what IP ranges have been added or removed
 
 ## Script Structure
@@ -267,11 +273,12 @@ How it works:
 
 ## Updates
 
-This repository is automatically updated **daily** to reflect the latest Iranian IP address allocations. Each update:
+This repository's workflow runs **daily**, on manual dispatch, and when a change to `custom_ips.txt` is pushed to `main`. Each run:
 
 - Pulls the latest data from ipverse/rir-ip
+- Merges in the hand-maintained ranges from `custom_ips.txt`
 - Generates updated MikroTik scripts
-- Commits the changes to this repository
+- Commits only when the generated IP data changes (not when only the generated timestamp differs)
 
 Check the commit history to see the update frequency and changes.
 

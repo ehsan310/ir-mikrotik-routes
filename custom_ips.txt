@@ -1,0 +1,13 @@
+# Custom IPv4 ranges to include in addition to the ipverse/rir-ip Iran (IR) data.
+#
+# Use this for ranges that are used in Iran but that ipverse lists under another
+# country (ipverse follows RIR delegation data, which records the country of the
+# allocation holder, not where the range is actually used).
+#
+# Format: one IPv4 network per line in CIDR notation (a bare IP means /32).
+# Host bits must be zero (77.104.64.0/18, not 77.104.65.0/18).
+# '#' starts a comment; blank lines are ignored.
+# Duplicates and ranges overlapping the ipverse data are merged automatically.
+# Pushing a change to this file to main regenerates iran_list.rsc and iran_routes.rsc.
+
+77.104.64.0/18  # Respina (AS42337); ipverse lists it under AE
