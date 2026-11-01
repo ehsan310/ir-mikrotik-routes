@@ -1,5 +1,6 @@
 # IPv4 ranges used in Iran that ipverse lists under another country.
 # One CIDR per line with an optional comment; checked and extended automatically (see AGENTS.md).
+5.10.248.0/24      # AZ: Potenting
 5.160.0.0/18       # AE: AE-IPMASTER-20120725
 5.160.64.0/19      # AE: AE-IPMASTER-20120725
 5.160.96.0/21      # AE: AE-IPMASTER-20120725
@@ -37,6 +38,8 @@
 185.14.160.0/22    # AE: AE-ALNAFETHACOMPUTERSREQU-20130102
 185.211.56.0/22    # AE: AE-AIROSERVER-20170703
 185.225.240.0/22   # AE: AE-ALNAFETHACOMPUTERSREQU-20171016
+185.255.68.0/23    # AM: AM-REGIKA-20180413
+185.255.70.0/24    # AM: AM-REGIKA-20180413
 193.58.119.0/24    # AE: AE-AIROSERVER-20240115
 217.60.238.0/24    # AE: Giti_Secure_Cloud
 217.60.243.0/24    # AE: Giti_Secure_Cloud_LLC
