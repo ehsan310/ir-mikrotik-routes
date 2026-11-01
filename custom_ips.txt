@@ -10,4 +10,56 @@
 # Duplicates and ranges overlapping the ipverse data are merged automatically.
 # Pushing a change to this file to main regenerates iran_list.rsc and iran_routes.rsc.
 
+# --- Manual entries ----------------------------------------------------------
 77.104.64.0/18  # Respina (AS42337); ipverse lists it under AE
+
+# --- Scanned: ipverse AE ranges used in Iran (2026-11-01) ----------------------
+# ipverse lists these under AE (UAE IP brokers such as IPMASTER, ALNAFETHA and
+# AIROSERVER), but the most-specific RIPE inetnum says country IR and the ranges
+# are announced from Iran: by IR-registered ASNs, or by AS39368 (AE-registered,
+# all upstreams Iranian). Sources: ipverse country/ae, RIPE DB inetnum dump
+# 2026-10-31, CAIDA RouteViews prefix2as 2026-10-31.
+# Left out (IR in the RIPE DB, but announced or geolocated outside Iran):
+# 5.160.111.0/24, 31.56.54.0/24, 31.59.169.0/24, 94.183.172.0/24,
+# 94.183.192.0/24, 94.183.216.0/24.
+# Line format: CIDR  # RIPE netname | origin AS(es), largest first
+5.160.0.0/18       # AE-IPMASTER-20120725 | AS42337 AS51431 AS61176 +7 more
+5.160.64.0/19      # AE-IPMASTER-20120725 | AS42337 AS214922
+5.160.96.0/21      # AE-IPMASTER-20120725 | AS42337
+5.160.104.0/22     # AE-IPMASTER-20120725 | AS42337
+5.160.108.0/23     # AE-IPMASTER-20120725 | AS42337
+5.160.110.0/24     # AE-IPMASTER-20120725 | AS198154
+5.160.112.0/20     # AE-IPMASTER-20120725 | AS42337
+5.160.128.0/17     # AE-IPMASTER-20120725 | AS42337 AS49847 AS62039 +26 more
+31.56.89.0/24      # Giti-Secure-Cloud | AS204104
+31.58.237.0/24     # Giti-Secure-Cloud | AS204104
+46.209.0.0/16      # AE-IPMASTER-20101202 | AS42337 AS59962 AS214998
+77.237.64.0/19     # AE-ALNAFETHACOMPUTERSREQU-20070201 | AS42337 AS51431 AS205207 +5 more
+92.242.192.0/19    # AE-ALNAFETHACOMPUTERSREQU-20080108 | AS42337 AS205207
+94.183.149.0/24    # TAHLIL-DADEH-NOVIN-FADAK | AS211881
+94.183.150.0/24    # ParsWebHost | AS214957
+94.183.153.0/24    # Giti-Secure-Cloud | AS204104
+94.183.154.0/24    # Giti-Secure-Cloud | AS204104
+94.183.162.0/23    # Abr-Dade, TADServer | AS44436 AS204104
+94.183.165.0/24    # rapidoserver | AS218732
+94.183.166.0/24    # MTServer | AS216169
+94.183.171.0/24    # (individual assignment) | AS214184
+94.183.173.0/24    # Digitalvps_Hosting | AS201194
+94.183.175.0/24    # MTserver | AS205536
+94.183.176.0/24    # mrserver | AS61248
+94.183.180.0/24    # MTserver | AS216169
+94.183.207.0/24    # MAHANCLOUD | AS214431
+94.183.210.0/23    # Aryananet, DyarWeb | AS201194 AS215496
+94.183.215.0/24    # PingBaz_Network_ltd | AS214078
+94.183.225.0/24    # MahanCloud | AS214431
+94.183.227.0/24    # MTServer | AS205536
+94.183.231.0/24    # MTserver | AS205536
+94.183.237.0/24    # Mizbani_Hooshmand_Mehr_Afarin | AS214567
+94.183.240.0/24    # EspyrCloudNetwork | AS214192
+185.14.160.0/22    # AE-ALNAFETHACOMPUTERSREQU-20130102 | AS42337 AS214922
+185.211.56.0/22    # AE-AIROSERVER-20170703 | AS39368(AE)
+185.225.240.0/22   # AE-ALNAFETHACOMPUTERSREQU-20171016 | AS42337
+193.58.119.0/24    # AE-AIROSERVER-20240115 | AS39368(AE)
+217.60.238.0/24    # Giti_Secure_Cloud | AS204104
+217.60.243.0/24    # Giti_Secure_Cloud_LLC | AS216169
+217.60.255.0/24    # Sepehrsabz-DC | AS204203
