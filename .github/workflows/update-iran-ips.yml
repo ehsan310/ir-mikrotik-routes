@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Generate RSC Files
         run: |
@@ -211,7 +211,7 @@ jobs:
           fi
 
           git add iran_list.rsc iran_routes.rsc
-          git commit -m "Update Iran IP List"
+          git commit -m "chore(data): update Iran IP list"
           if ! git push; then
             echo "Error: git push failed."
             exit 1
