@@ -1,4 +1,4 @@
-# Generated on Wed Nov 18 09:45:41 UTC 2026
+# Generated on Thu Nov 19 09:54:57 UTC 2026
 :global irtable
 :global irgw
 :global irgw2
@@ -709,6 +709,7 @@
 /ip route add distance=$irDistanceVal dst-address=93.119.64.0/19 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=93.119.208.0/20 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=93.126.0.0/18 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal dst-address=93.187.70.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=93.190.24.0/21 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=94.24.0.0/20 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=94.24.16.0/21 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -1704,7 +1705,7 @@
 /ip route add distance=$irDistanceVal dst-address=194.242.22.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=194.246.34.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.2.234.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
-/ip route add distance=$irDistanceVal dst-address=195.2.250.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal dst-address=195.2.250.0/23 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.8.102.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.8.110.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.8.112.0/24 gateway="$irgw" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -2503,6 +2504,7 @@
 /ip route add distance=$irDistanceVal dst-address=93.119.64.0/19 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=93.119.208.0/20 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=93.126.0.0/18 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal dst-address=93.187.70.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=93.190.24.0/21 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=94.24.0.0/20 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=94.24.16.0/21 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -3498,7 +3500,7 @@
 /ip route add distance=$irDistanceVal dst-address=194.242.22.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=194.246.34.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.2.234.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
-/ip route add distance=$irDistanceVal dst-address=195.2.250.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal dst-address=195.2.250.0/23 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.8.102.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.8.110.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal dst-address=195.8.112.0/24 gateway="$irgw" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -4299,6 +4301,7 @@
 /ip route add distance=$irDistanceVal2 dst-address=93.119.64.0/19 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=93.119.208.0/20 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=93.126.0.0/18 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal2 dst-address=93.187.70.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=93.190.24.0/21 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=94.24.0.0/20 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=94.24.16.0/21 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -5294,7 +5297,7 @@
 /ip route add distance=$irDistanceVal2 dst-address=194.242.22.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=194.246.34.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.2.234.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
-/ip route add distance=$irDistanceVal2 dst-address=195.2.250.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal2 dst-address=195.2.250.0/23 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.8.102.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.8.110.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.8.112.0/24 gateway="$irgw2" routing-table="$irtable" pref-src="$irprefsrc" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -6093,6 +6096,7 @@
 /ip route add distance=$irDistanceVal2 dst-address=93.119.64.0/19 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=93.119.208.0/20 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=93.126.0.0/18 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal2 dst-address=93.187.70.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=93.190.24.0/21 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=94.24.0.0/20 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=94.24.16.0/21 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
@@ -7088,7 +7092,7 @@
 /ip route add distance=$irDistanceVal2 dst-address=194.242.22.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=194.246.34.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.2.234.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
-/ip route add distance=$irDistanceVal2 dst-address=195.2.250.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
+/ip route add distance=$irDistanceVal2 dst-address=195.2.250.0/23 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.8.102.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.8.110.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
 /ip route add distance=$irDistanceVal2 dst-address=195.8.112.0/24 gateway="$irgw2" routing-table="$irtable" check-gateway=$irCheckGatewayVal comment="IR_BGP_DATA"
