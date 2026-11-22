@@ -23,7 +23,6 @@
 94.183.165.0/24    # AE: rapidoserver
 94.183.166.0/24    # AE: MTServer
 94.183.171.0/24    # AE: (individual assignment)
-94.183.173.0/24    # AE: Digitalvps_Hosting
 94.183.175.0/24    # AE: MTserver
 94.183.176.0/24    # AE: mrserver
 94.183.180.0/24    # AE: MTserver
